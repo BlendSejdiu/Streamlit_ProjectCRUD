@@ -119,5 +119,36 @@ def main():
             for order in orders:
                 st.write(f"Name: {order.name}, Quantity: {order.quantity}, Date: {order.date}, Place: {order.place}")
 
+        order = session.query(Order).all()
+        order_name = [order.name for order in order]
+        selected_order = st.selectbox('Select a order:', order_name, key="unique_key_oone")
+        
+        order = session.query(Order).filter_by(name=selected_order).first()
+        if order is None:
+            quantity = 1
+        else:
+            quantity = order.quantity
+            quantity = st.number_input('Order quantity:', value=quantity, min_value=1, key="uniku5")
+
+        if st.button('Update Order quantity'):
+            if order is None:
+                st.error(f'Order {selected_order} does not exist in the database.')
+            else:
+                order.quantity = quantity
+                session.commit()
+                st.success(f'Quantity of orders {selected_order} updated to {quantity}.')
+
+        orders = session.query(Order).all()
+        order_names_d = [order.name for order in orders]
+        selected_order_d = st.selectbox('Select a order:', order_names_d, key="unique_key_twwo")
+
+
+        if st.button('Delete Order'):
+            order = session.query(Order).filter_by(name=selected_order_d).first()
+            session.delete(order)
+            session.commit()
+            st.success(f'Order {selected_order_d} deleted from the database.')
+        
+
 if __name__ == "__main__":
     main()
